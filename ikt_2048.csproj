@@ -11,7 +11,7 @@
     <None Update="hiscore.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="hiscore.txt.txt">
+    <None Update="prev.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

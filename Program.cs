@@ -79,7 +79,7 @@
             value = Value;
             if (value == 0)
                 isEmpty = true;
-            if (value <= 4)
+            else if (value <= 4)
                 color = ConsoleColor.White;
             else if (value >= 8 && value <= 64)
                 color = ConsoleColor.DarkRed;
