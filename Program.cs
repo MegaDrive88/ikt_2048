@@ -3,7 +3,6 @@
         static Random rnd = new();
         static Tile[,] table = new Tile[4, 4];
         static void Main() {
-            Console.ForegroundColor = ConsoleColor.White;
             if (ready()) {
                 starting();
             }
@@ -29,6 +28,7 @@
                 // fajl olvasas
             }
             bool ready() {
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("\t   ___   ____  __ __  ____ \n\t  |__ \\ / __ \\/ // / ( __ )\n\t  __/ // / / / // /_/ __  |\n\t / __// /_/ /__  __/ /_/ / \n\t/____/\\____/  /_/  \\____/");
                 Console.WriteLine("\tHigh score: $");
                 Console.WriteLine("\tPress ENTER to start!");
@@ -52,6 +52,8 @@
             }
             void move() {
                 // fel le bal jobb
+
+                //végére tableprint, fájlírás, lehetőségek
             }
 
 
@@ -72,7 +74,7 @@
 
 
     public class Tile {
-        public int value;
+        public int value { get; private set; }
         private ConsoleColor color;
         public bool isEmpty = false;
         public Tile(int Value) {
@@ -98,9 +100,11 @@
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("[    ]");
+                // 5?
             }
-
-
+        }
+        public static Tile operator+(Tile a, Tile b) {
+            return new(a.value + b.value);
         }
     }
 }
