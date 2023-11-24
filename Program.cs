@@ -7,8 +7,8 @@
                 starting();
             }
             
-            
 
+            
 
 
 
@@ -22,10 +22,13 @@
                     x = rnd.Next(0, 4);
                     y = rnd.Next(0, 4);
                 }
-                table[y, x] = new(rnd.Next(1, 3) * 2);
+                table[y, x] = new(new[] { 2, 2, 4 }[rnd.Next(0, 3)]);
             }
             void fileRead() {
                 // fajl olvasas
+            }
+            void fileWrite(string value) {
+                // fajl iras
             }
             bool ready() {
                 Console.ForegroundColor = ConsoleColor.White;
@@ -54,6 +57,7 @@
                 // fel le bal jobb
 
                 //végére tableprint, fájlírás, lehetőségek
+                numberGen();
             }
 
 
@@ -76,12 +80,10 @@
     public class Tile {
         public int value { get; private set; }
         private ConsoleColor color;
-        public bool isEmpty = false;
+        public bool isEmpty { get { return value == 0; } }
         public Tile(int Value) {
             value = Value;
-            if (value == 0)
-                isEmpty = true;
-            else if (value <= 4)
+            if (value <= 4)
                 color = ConsoleColor.White;
             else if (value >= 8 && value <= 64)
                 color = ConsoleColor.DarkRed;
@@ -92,15 +94,13 @@
             if (!isEmpty) {
                 Console.BackgroundColor = color;
                 Console.ForegroundColor = ConsoleColor.Black;
-                string valueAsAString = $"{value}{(value.ToString().Length <= 2 ? " " : "")}";
-                Console.Write($"[{new string(' ', 4 - valueAsAString.Length)}{valueAsAString}]");
+                Console.Write($"[{new string(' ', (6 - value.ToString().Length) / 2)}{value}{new string(' ', (5 - value.ToString().Length) / 2)}]");
                 Console.BackgroundColor = ConsoleColor.Black;
             }
             else {
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.Write("[    ]");
-                // 5?
+                Console.Write("[     ]");
             }
         }
         public static Tile operator+(Tile a, Tile b) {
