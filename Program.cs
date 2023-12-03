@@ -12,6 +12,7 @@
     public static class Game {
         static Random rnd = new();
         static Tile[,] table = new Tile[4, 4];
+        static int score = 0;
         public static bool Ready() {
             Console.CursorVisible = false;
             Console.ForegroundColor = ConsoleColor.White;
@@ -46,43 +47,59 @@
         public static bool Over() {
             return false;
         }
+        //private static object[] GetStartingNums(ConsoleKey k) {
+        //    switch (k) {
+        //        case ConsoleKey.UpArrow:
+        //            return new object[] { 1, 0, -1, 0, 0, 1, 1, -3 };
+        //        case ConsoleKey.DownArrow:
+        //            return new object[] { 2, 0, 1, 0, 0, -1, 1, 3 };
+        //        case ConsoleKey.LeftArrow:
+        //            return new object[] { 0, 1, 0, -1, 1, 0, -3, 1 };
+        //        case ConsoleKey.RightArrow:
+        //            return new object[] { 0, 2, 0, 1, -1, 0, 3, 1 };
+        //        case ConsoleKey.Z:
+        //            return new object[] { -1, -1, "Undo" };
+        //        case ConsoleKey.Escape:
+        //            return new object[] { -1, -1, "Exit" };
+        //        default:
+        //            return new object[] { -1 , -1, "Invalid"};
+        //    }
+        //}
         private static void Transpose(ConsoleKey k) {
-            /*
-            bal --> [x][1]
-            jobb --> [x][2]
-            fel --> [1][x]
-            le --> [2][x]
-            */
-
-
-
-
-            /*
-            int y, x;
-            switch (k) {
-                case ConsoleKey.UpArrow:
-                    y = 0; x = 0;
-                    break;
-                case ConsoleKey.LeftArrow:
-                    y = 0; x = 0;
-                    break;
-                case ConsoleKey.DownArrow:
-                    y = 2; x = 0;
-                    break;
-                case ConsoleKey.RightArrow:
-                    y = 0; x = 2;
-                    break;
+            Dictionary<ConsoleKey, object[]> nums = new Dictionary<ConsoleKey, object[]>
+            {
+                { ConsoleKey.UpArrow, new object[] { 1, 0, -1, 0, 0, 1, 1, -3 } }, // ezt vhogy refactorolni kéne
+                { ConsoleKey.DownArrow, new object[] { 2, 0, 1, 0, 0, -1, 1, 3 } },// de legalább műxik
+                { ConsoleKey.LeftArrow, new object[] { 0, 1, 0, -1, 1, 0, -3, 1 } },//mondjuk szélen kezdődne mind.. akk 2 számmal kevesebb
+                { ConsoleKey.RightArrow, new object[] { 0, 2, 0, 1, -1, 0, 3, 1 } },
+                { ConsoleKey.Z, new object[] { -1, -1, "Undo" } },
+                { ConsoleKey.Escape, new object[] { -1, -1, "Exit" } },
+            };
+            try { 
+                int y = (int)nums[k][0], x = (int)nums[k][1];
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (table[y + (int)nums[k][2], x + (int)nums[k][3]].isEmpty) {
+                            table[y + (int)nums[k][2], x + (int)nums[k][3]] = table[y, x]; //csak egyet lép; while kéne
+                            table[y, x] = new(0);
+                        }
+                        x += (int)nums[k][4];
+                        y += (int)nums[k][5];
+                    }
+                    x += (int)nums[k][6];
+                    y += (int)nums[k][7];
+                }
             }
-            */
-
-
-
-
-            //for (int i = 0; i < 4; i++) {
-            //    for (int j = 0; j < 4; j++) {
-            //        Console.WriteLine("we good"); 
-            //    }
-            //}
+            catch {
+                switch (nums[k][2]) {
+                    case "Undo":
+                        break;
+                    case "Exit":
+                        break;
+                    default:
+                        break;
+                } 
+            }                
         }
         private static void numberGen() {
             int x = rnd.Next(0, 4);
@@ -100,6 +117,7 @@
             // fajl iras
         }
         private static void tablePrint() {
+            Console.Clear();
             for (int i = 0; i < table.GetLength(0); i++) {
                 for (int j = 0; j < 4; j++) {
                     table[i, j].Show();
