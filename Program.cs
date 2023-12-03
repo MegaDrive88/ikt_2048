@@ -39,67 +39,73 @@
         }
         public static void Move() {
             //fileWrite(prev);
-            Transpose(Console.ReadKey(true).Key);
-            //nyert e?
+            Transpose(GetStartingNums(Console.ReadKey(true).Key));
+            //nyert e? -- nem kell kulon fuggveny
             numberGen();
             tablePrint();
         }
         public static bool Over() {
             return false;
         }
-        //private static object[] GetStartingNums(ConsoleKey k) {
-        //    switch (k) {
-        //        case ConsoleKey.UpArrow:
-        //            return new object[] { 1, 0, -1, 0, 0, 1, 1, -3 };
-        //        case ConsoleKey.DownArrow:
-        //            return new object[] { 2, 0, 1, 0, 0, -1, 1, 3 };
-        //        case ConsoleKey.LeftArrow:
-        //            return new object[] { 0, 1, 0, -1, 1, 0, -3, 1 };
-        //        case ConsoleKey.RightArrow:
-        //            return new object[] { 0, 2, 0, 1, -1, 0, 3, 1 };
-        //        case ConsoleKey.Z:
-        //            return new object[] { -1, -1, "Undo" };
-        //        case ConsoleKey.Escape:
-        //            return new object[] { -1, -1, "Exit" };
-        //        default:
-        //            return new object[] { -1 , -1, "Invalid"};
-        //    }
-        //}
-        private static void Transpose(ConsoleKey k) {
+        private static object[] GetStartingNums(ConsoleKey k) {
             Dictionary<ConsoleKey, object[]> nums = new Dictionary<ConsoleKey, object[]>
             {
                 { ConsoleKey.UpArrow, new object[] { 1, 0, -1, 0, 0, 1, 1, -3 } }, // ezt vhogy refactorolni kéne
                 { ConsoleKey.DownArrow, new object[] { 2, 0, 1, 0, 0, -1, 1, 3 } },// de legalább műxik
-                { ConsoleKey.LeftArrow, new object[] { 0, 1, 0, -1, 1, 0, -3, 1 } },//mondjuk szélen kezdődne mind.. akk 2 számmal kevesebb
+                { ConsoleKey.LeftArrow, new object[] { 0, 1, 0, -1, 1, 0, -3, 1 } },
                 { ConsoleKey.RightArrow, new object[] { 0, 2, 0, 1, -1, 0, 3, 1 } },
                 { ConsoleKey.Z, new object[] { -1, -1, "Undo" } },
                 { ConsoleKey.Escape, new object[] { -1, -1, "Exit" } },
             };
-            try { 
-                int y = (int)nums[k][0], x = (int)nums[k][1];
-                for (int i = 0; i < 4; i++) {
-                    for (int j = 0; j < 3; j++) {
-                        if (table[y + (int)nums[k][2], x + (int)nums[k][3]].isEmpty) {
-                            table[y + (int)nums[k][2], x + (int)nums[k][3]] = table[y, x]; //csak egyet lép; while kéne
-                            table[y, x] = new(0);
-                        }
-                        x += (int)nums[k][4];
-                        y += (int)nums[k][5];
-                    }
-                    x += (int)nums[k][6];
-                    y += (int)nums[k][7];
-                }
+            try {
+                return nums[k];
             }
             catch {
-                switch (nums[k][2]) {
+                return new object[] { -1, -1, "Invalid" };
+            }
+        }
+        private static void Transpose(object[] nums) {
+            int y = (int)nums[0], x = (int)nums[1];
+            bool moved = false;
+            if (y != -1) {
+                int scout_y = y + (int)nums[2], scout_x = x + (int)nums[3];
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        try {
+                            while (table[scout_y, scout_x].isEmpty) {
+                                moved = true;
+                                scout_y += (int)nums[2];
+                                scout_x += (int)nums[3];
+                                //valahova ide kéne majd az összeadás
+                            }
+                        }
+                        catch { }
+                        scout_y -= (int)nums[2];
+                        scout_x -= (int)nums[3];
+                        table[scout_y, scout_x] = table[y, x];
+                        table[y, x] = moved ? new(0) : table[y, x];
+                        x += (int)nums[4];
+                        y += (int)nums[5];
+                        scout_y = y + (int)nums[2];
+                        scout_x = x + (int)nums[3];
+                        moved = false;
+                    }
+                    x += (int)nums[6];
+                    y += (int)nums[7];
+                    scout_y = y + (int)nums[2];
+                    scout_x = x + (int)nums[3];
+                }
+            }
+            else {
+                switch (nums[2]) {
                     case "Undo":
                         break;
                     case "Exit":
                         break;
                     default:
                         break;
-                } 
-            }                
+                }
+            }
         }
         private static void numberGen() {
             int x = rnd.Next(0, 4);
