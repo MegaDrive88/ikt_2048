@@ -8,7 +8,40 @@
                 Game.Move();
             }            
         }
-    } 
+    }
+    //public class StartingNums {
+    //    ConsoleKey k { get; set
+    //        {
+    //            value = value
+
+    //        }
+    //    }
+    //    object[] nums { get {
+    //        switch (k)
+    //        {
+    //            case ConsoleKey.UpArrow:
+    //                return new object[] { 1, 0, -1, 0, 0, 1, 1, -3 };
+    //            case ConsoleKey.DownArrow:
+    //                return new object[] { 2, 0, 1, 0, 0, -1, 1, 3 };
+    //                break;
+    //            case ConsoleKey.LeftArrow:
+    //                return  new object[] { 0, 1, 0, -1, 1, 0, -3, 1 };
+    //            case ConsoleKey.RightArrow:
+    //                return new object[] { 0, 2, 0, 1, -1, 0, 3, 1 };
+    //            case ConsoleKey.Z:
+    //                return new object[] { -1, -1, "Undo" };
+    //            case ConsoleKey.Escape:
+    //                return new object[] { -1, -1, "Exit" };
+                
+    //            default:
+    //                    return new object[] { -1, -1, "Invalid" };
+    //        }
+    //    } }
+
+
+    //    //ConsoleKey.UpArrow, new object[] { 1, 0, -1, 0, 0, 1, 1, -3 }
+    //}
+
     public static class Game {
         static Random rnd = new();
         static Tile[,] table = new Tile[4, 4];
@@ -41,8 +74,6 @@
             //fileWrite(prev);
             Transpose(GetStartingNums(Console.ReadKey(true).Key));
             //nyert e? -- nem kell kulon fuggveny
-            numberGen();
-            tablePrint();
         }
         public static bool Over() {
             return false;
@@ -95,6 +126,8 @@
                     scout_y = y + (int)nums[2];
                     scout_x = x + (int)nums[3];
                 }
+                numberGen();
+                tablePrint();
             }
             else {
                 switch (nums[2]) {
