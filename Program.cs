@@ -25,7 +25,8 @@
     public static class Game {
         private static Random rnd = new();
         private static Tile[,] table = new Tile[4, 4];
-        static int score = 0;
+        private static List<string?> file = new();
+        public static int score = 0;
         public static bool Ready() {
             Console.CursorVisible = false;
             Console.ForegroundColor = ConsoleColor.White;
@@ -51,7 +52,8 @@
             tablePrint();
         }
         public static void Move() {
-            //fileWrite(prev);
+            //getTableFromFile();
+            tablePrint();
             Transpose(StartingNums.Get(Console.ReadKey(true).Key));
             //nyert e? -- nem kell kulon fuggveny  
         }
@@ -72,6 +74,7 @@
                                 scout_x += nums[3];
                                 //valahova ide kéne majd az összeadás
                             }
+
                         }
                         catch { }
                         scout_y -= nums[2];
@@ -89,6 +92,7 @@
                     scout_y = y + nums[2];
                     scout_x = x + nums[3];
                 }
+                //writeTableToFile();
                 numberGen(); // csak ha volt mozgás
                 tablePrint();
             }
@@ -96,6 +100,7 @@
                 switch (nums[2]) {
                     case 0:
                         //undo
+                        //gettablefromfile
                         break;
                     case 1:
                         // exit
@@ -114,11 +119,40 @@
             }
             table[y, x] = new(new[] { 2, 2, 4 }[rnd.Next(0, 3)]);
         }
-        private static void fileRead() {
-            // fajl olvasas
+        private static void fileRead(string filename) { // 33 sor? -- fixed
+            StreamReader sr = new(filename);
+            while (!sr.EndOfStream) {
+                file.Add(sr.ReadLine()); // bocs megirtam ezeket mer igy tudok majd adott táblákon tesztelni
+            }
+            sr.Close();
         }
-        private static void fileWrite(string value) {
-            // fajl iras
+        private static void fileWrite(string filename, string value, bool appendMode) {
+            StreamWriter sw = new(filename, appendMode);
+            sw.Write(value);
+            sw.Close();
+        }
+        private static void getTableFromFile() {
+            //emptyList();
+            
+            fileRead("../prev.txt");
+            for(int i = 0; i < 4; i++) {
+                string[] oneLine = file[i].Split('\t');
+                for (int j = 0; j < 4; j++) {
+                    table[i, j] = new(int.Parse(oneLine[j]));
+                }
+            }
+            
+        }
+        private static void writeTableToFile() {
+            emptyList();
+            for(int i = 0; i < 4; i++) {
+                fileWrite("prev.txt", $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
+            }
+            fileWrite("prev.txt", $"{score}", true);
+        }
+        private static void emptyList() {
+            fileWrite("prev.txt", "", false);
+            file = new();
         }
         private static void tablePrint() {
             Console.Clear();
