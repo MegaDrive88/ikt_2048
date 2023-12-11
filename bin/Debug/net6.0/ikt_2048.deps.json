@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "ikt_2048/1.0.0": {
+        "runtime": {
+          "ikt_2048.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ikt_2048/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
