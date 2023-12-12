@@ -52,7 +52,7 @@
             tablePrint();
         }
         public static void Move() {
-            getTableFromFile();
+            //getTableFromFile();
             tablePrint();
             Transpose(StartingNums.Get(Console.ReadKey(true).Key));
             //nyert e? -- nem kell kulon fuggveny  
@@ -63,6 +63,7 @@
         private static void Transpose(int[] nums) {
             int y = nums[0], x = nums[1];
             bool moved = false;
+            bool numberGenNeeded = false;
             if (y != -1) {
                 int scout_y = y + nums[2], scout_x = x + nums[3];
                 for (int i = 0; i < 4; i++) {
@@ -73,22 +74,20 @@
                                 scout_y += nums[2];
                                 scout_x += nums[3];
                             }
+                            if (table[scout_y, scout_x].Value == table[y, x].Value && !table[scout_y, scout_x].isEmpty) {
+                                table[scout_y, scout_x] += table[y, x];
+                                score += table[scout_y, scout_x].Value;
+                                table[y, x] = new(0);
+                                numberGenNeeded = true;
+                            }
+                        } catch { }
+                        scout_y -= nums[2];
+                        scout_x -= nums[3];
+                        table[scout_y, scout_x] = table[y, x];
+                        if (moved) {
+                            table[y, x] = new(0);
+                            numberGenNeeded = true;
                         }
-                        catch { }
-                        //scout_y -= nums[2];
-                        //scout_x -= nums[3];
-                        if (table[scout_y, scout_x] == table[y, x]) {
-                            table[scout_y, scout_x] = table[y, x] + table[scout_y, scout_x];
-                            scout_y -= nums[2];
-                            scout_x -= nums[3];
-                            table[scout_y, scout_x] = new(0);
-                        }
-                        else {
-                            scout_y -= nums[2];
-                            scout_x -= nums[3];
-                            table[scout_y, scout_x] = table[y, x];
-                        }
-                        table[y, x] = moved ? new(0) : table[y, x];
                         x += nums[4];
                         y += nums[5];
                         scout_y = y + nums[2];
@@ -99,11 +98,13 @@
                     y += nums[7];
                     scout_y = y + nums[2];
                     scout_x = x + nums[3];
-                    writeTableToFile();
+                    //writeTableToFile();
                 }
                 //writeTableToFile();
-                numberGen(); // csak ha volt mozgás
-                tablePrint();
+                if (numberGenNeeded) {
+                    numberGen();
+                }
+                tablePrint(); // 4 2 2 2?
             }
             else {
                 switch (nums[2]) {
@@ -155,12 +156,12 @@
         private static void writeTableToFile() {
             emptyList();
             for(int i = 0; i < 4; i++) {
-                fileWrite("prev.txt", $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
+                fileWrite("../prev.txt", $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
             }
-            fileWrite("prev.txt", $"{score}", true);
+            fileWrite("../prev.txt", $"{score}", true);
         }
         private static void emptyList() {
-            fileWrite("prev.txt", "", false);
+            fileWrite("../prev.txt", "", false);
             file = new();
         }
         private static void tablePrint() {
