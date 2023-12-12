@@ -52,7 +52,7 @@
             tablePrint();
         }
         public static void Move() {
-            //getTableFromFile();
+            getTableFromFile();
             tablePrint();
             Transpose(StartingNums.Get(Console.ReadKey(true).Key));
             //nyert e? -- nem kell kulon fuggveny  
@@ -72,14 +72,22 @@
                                 moved = true;
                                 scout_y += nums[2];
                                 scout_x += nums[3];
-                                //valahova ide kéne majd az összeadás
                             }
-
                         }
                         catch { }
-                        scout_y -= nums[2];
-                        scout_x -= nums[3];
-                        table[scout_y, scout_x] = table[y, x];
+                        //scout_y -= nums[2];
+                        //scout_x -= nums[3];
+                        if (table[scout_y, scout_x] == table[y, x]) {
+                            table[scout_y, scout_x] = table[y, x] + table[scout_y, scout_x];
+                            scout_y -= nums[2];
+                            scout_x -= nums[3];
+                            table[scout_y, scout_x] = new(0);
+                        }
+                        else {
+                            scout_y -= nums[2];
+                            scout_x -= nums[3];
+                            table[scout_y, scout_x] = table[y, x];
+                        }
                         table[y, x] = moved ? new(0) : table[y, x];
                         x += nums[4];
                         y += nums[5];
@@ -91,6 +99,7 @@
                     y += nums[7];
                     scout_y = y + nums[2];
                     scout_x = x + nums[3];
+                    writeTableToFile();
                 }
                 //writeTableToFile();
                 numberGen(); // csak ha volt mozgás
