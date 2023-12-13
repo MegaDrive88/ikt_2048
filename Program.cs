@@ -101,10 +101,10 @@
                     //writeTableToFile();
                 }
                 //writeTableToFile();
-                if (numberGenNeeded) {
+                if (numberGenNeeded) { // needs fix
                     numberGen();
                 }
-                tablePrint(); // 4 2 2 2?
+                tablePrint(); // 2 2 4 x <-
             }
             else {
                 switch (nums[2]) {
@@ -129,10 +129,10 @@
             }
             table[y, x] = new(new[] { 2, 2, 4 }[rnd.Next(0, 3)]);
         }
-        private static void fileRead(string filename) { // 33 sor? -- fixed
+        private static void fileRead(string filename) {
             StreamReader sr = new(filename);
             while (!sr.EndOfStream) {
-                file.Add(sr.ReadLine()); // bocs megirtam ezeket mer igy tudok majd adott táblákon tesztelni
+                file.Add(sr.ReadLine());
             }
             sr.Close();
         }
@@ -151,7 +151,7 @@
                     table[i, j] = new(int.Parse(oneLine[j]));
                 }
             }
-            
+            // score
         }
         private static void writeTableToFile() {
             emptyList();
@@ -166,6 +166,8 @@
         }
         private static void tablePrint() {
             Console.Clear();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"Score: {score}");
             for (int i = 0; i < table.GetLength(0); i++) {
                 for (int j = 0; j < 4; j++) {
                     table[i, j].Show();
@@ -178,8 +180,10 @@
         public int Value { get; private set; }
         private ConsoleColor color;
         public bool isEmpty { get { return Value == 0; } }
+        public bool comesFromMerge { get; set; }
         public Tile(int value) {
             Value = value;
+            comesFromMerge = false;
             if (Value <= 4)
                 color = ConsoleColor.White;
             else if (Value >= 8 && Value <= 64)
