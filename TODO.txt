@@ -1,0 +1,9 @@
+﻿Nyerést megcsinálni
+(65k fölé nem lehet menni; ha addig elér kapjon vmi bónuszt)
+minden kör végén fájlírás
+visszavonás (fájlból); kilépés
+start menü után kérdés, hogy új játék vagy előző folytatása (szintén fájlból)
+volt e mozgás; kell e számot generálni?
+highscore, szintén fájl, start menüre kiíratni
+a többi kommentekben;
+mikor vesztett? (static bool Over. már van, csak meg kell írni a belsejét)

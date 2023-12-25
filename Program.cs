@@ -55,7 +55,7 @@
             //getTableFromFile();
             tablePrint();
             Transpose(StartingNums.Get(Console.ReadKey(true).Key));
-            //nyert e? -- nem kell kulon fuggveny  
+            //nyert e? 
         }
         public static bool Over() {
             return false;
@@ -74,8 +74,9 @@
                                 scout_y += nums[2];
                                 scout_x += nums[3];
                             }
-                            if (table[scout_y, scout_x].Value == table[y, x].Value && !table[scout_y, scout_x].isEmpty) {
+                            if (table[scout_y, scout_x].Value == table[y, x].Value && !table[scout_y, scout_x].isEmpty && !table[scout_y, scout_x].comesFromMerge) {
                                 table[scout_y, scout_x] += table[y, x];
+                                table[scout_y, scout_x].comesFromMerge = true;
                                 score += table[scout_y, scout_x].Value;
                                 table[y, x] = new(0);
                                 numberGenNeeded = true;
@@ -104,7 +105,7 @@
                 if (numberGenNeeded) { // needs fix
                     numberGen();
                 }
-                tablePrint(); // 2 2 4 x <-
+                tablePrint(); // 2 van, de egyenlőre maradjon.
             }
             else {
                 switch (nums[2]) {
@@ -170,6 +171,7 @@
             Console.WriteLine($"Score: {score}");
             for (int i = 0; i < table.GetLength(0); i++) {
                 for (int j = 0; j < 4; j++) {
+                    table[i, j].comesFromMerge = false;
                     table[i, j].Show();
                 }
                 Console.WriteLine();
