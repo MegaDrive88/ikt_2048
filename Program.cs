@@ -26,7 +26,8 @@
         private static Random rnd = new();
         private static Tile[,] table = new Tile[4, 4];
         private static List<string?> file = new();
-        public static int score = 0;
+        public static int score;
+        private static bool moveReady = true;
         public static bool Ready() {
             Console.CursorVisible = false;
             Console.ForegroundColor = ConsoleColor.White;
@@ -49,13 +50,19 @@
             }
             numberGen();
             numberGen();
+            writeTableToFile(); // ha új játék
             tablePrint();
         }
         public static void Move() {
-            //getTableFromFile();
-            tablePrint();
-            Transpose(StartingNums.Get(Console.ReadKey(true).Key));
-            //nyert e? 
+            if (moveReady) {
+                moveReady = false;
+                getTableFromFile();
+                tablePrint();
+                Transpose(StartingNums.Get(Console.ReadKey(true).Key));
+                writeTableToFile();
+                //nyert e? 
+                moveReady = true;
+            }
         }
         public static bool Over() {
             return false;
@@ -85,7 +92,7 @@
                         scout_y -= nums[2];
                         scout_x -= nums[3];
                         table[scout_y, scout_x] = table[y, x];
-                        if (moved) {
+                        if (moved && table[y, x].Value != 0) {
                             table[y, x] = new(0);
                             numberGenNeeded = true;
                         }
@@ -99,13 +106,9 @@
                     y += nums[7];
                     scout_y = y + nums[2];
                     scout_x = x + nums[3];
-                    //writeTableToFile();
                 }
-                //writeTableToFile();
-                if (numberGenNeeded) { // needs fix
+                if (numberGenNeeded)
                     numberGen();
-                }
-                tablePrint(); // 2 van, de egyenlőre maradjon.
             }
             else {
                 switch (nums[2]) {
@@ -138,13 +141,11 @@
             sr.Close();
         }
         private static void fileWrite(string filename, string value, bool appendMode) {
-            StreamWriter sw = new(filename, appendMode);
-            sw.Write(value);
-            sw.Close();
+            using (StreamWriter sw = new(filename, appendMode)) {
+                sw.Write(value);
+            }
         }
         private static void getTableFromFile() {
-            //emptyList();
-            
             fileRead("../prev.txt");
             for(int i = 0; i < 4; i++) {
                 string[] oneLine = file[i].Split('\t');
@@ -152,7 +153,7 @@
                     table[i, j] = new(int.Parse(oneLine[j]));
                 }
             }
-            // score
+            score = int.Parse(file[4]);
         }
         private static void writeTableToFile() {
             emptyList();
