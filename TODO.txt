@@ -4,6 +4,6 @@ minden kör végén fájlírás - DONE!
 visszavonás (fájlból); kilépés
 start menü után kérdés, hogy új játék vagy előző folytatása (szintén fájlból)
 volt e mozgás; kell e számot generálni? - DONE!
-highscore, szintén fájl, start menüre kiíratni
+highscore, szintén fájl, start menüre kiíratni - DONE!
 a többi kommentekben;
 mikor vesztett? (static bool Over. már van, csak meg kell írni a belsejét)

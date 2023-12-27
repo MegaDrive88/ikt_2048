@@ -32,7 +32,7 @@
             Console.CursorVisible = false;
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("\t   ___   ____  __ __  ____ \n\t  |__ \\ / __ \\/ // / ( __ )\n\t  __/ // / / / // /_/ __  |\n\t / __// /_/ /__  __/ /_/ / \n\t/____/\\____/  /_/  \\____/");
-            Console.WriteLine("\tHigh score: $");
+            Console.WriteLine($"\tHigh score: {getHighscore()}");
             Console.WriteLine("\tPress ENTER to start!");
             while (true) {
                 if (Console.ReadKey(true).Key == ConsoleKey.Enter) {
@@ -58,8 +58,9 @@
                 moveReady = false;
                 getTableFromFile();
                 tablePrint();
-                Transpose(StartingNums.Get(Console.ReadKey(true).Key));
+                Transpose(table, StartingNums.Get(Console.ReadKey(true).Key));
                 writeTableToFile();
+                refreshHighscore();
                 //nyert e? 
                 moveReady = true;
             }
@@ -67,7 +68,7 @@
         public static bool Over() {
             return false;
         }
-        private static void Transpose(int[] nums) {
+        private static void Transpose(Tile[,] table, int[] nums) {
             int y = nums[0], x = nums[1];
             bool moved = false;
             bool numberGenNeeded = false;
@@ -134,15 +135,20 @@
             table[y, x] = new(new[] { 2, 2, 4 }[rnd.Next(0, 3)]);
         }
         private static void fileRead(string filename) {
-            StreamReader sr = new(filename);
-            while (!sr.EndOfStream) {
-                file.Add(sr.ReadLine());
-            }
-            sr.Close();
+            using (StreamReader sr = new(filename)) {
+                while (!sr.EndOfStream) {
+                    file.Add(sr.ReadLine());
+                }
+            }                
         }
-        private static void fileWrite(string filename, string value, bool appendMode) {
-            using (StreamWriter sw = new(filename, appendMode)) {
-                sw.Write(value);
+        private static void fileWrite(string filename, string value, bool appendMode = false) {
+            try {
+                using (StreamWriter sw = new(filename, appendMode)) {
+                    sw.Write(value);
+                }
+            }
+            catch {
+                fileWrite(filename, value, appendMode);
             }
         }
         private static void getTableFromFile() {
@@ -156,20 +162,30 @@
             score = int.Parse(file[4]);
         }
         private static void writeTableToFile() {
-            emptyList();
-            for(int i = 0; i < 4; i++) {
+            fileWrite("../prev.txt", "");
+            file = new();
+            for (int i = 0; i < 4; i++) {
                 fileWrite("../prev.txt", $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
             }
             fileWrite("../prev.txt", $"{score}", true);
         }
-        private static void emptyList() {
-            fileWrite("../prev.txt", "", false);
+        private static void refreshHighscore() {
+            fileRead("../hiscore.txt");
+            if (score > int.Parse(file[^1])) {
+                fileWrite("../hiscore.txt", $"{score}");
+            }
             file = new();
+        }
+        private static int getHighscore() {
+            fileRead("../hiscore.txt");
+            int hs = int.Parse(file[^1]);
+            file = new();
+            return hs;
         }
         private static void tablePrint() {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"Score: {score}");
+            Console.WriteLine($"Score: {score}; High score: {getHighscore()}");
             for (int i = 0; i < table.GetLength(0); i++) {
                 for (int j = 0; j < 4; j++) {
                     table[i, j].comesFromMerge = false;
