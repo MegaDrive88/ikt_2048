@@ -1,12 +1,18 @@
-﻿namespace ikt {
+﻿using System.IO;
+
+namespace ikt {
     public class Program {
         static void Main() {
             if (Game.Ready()) {
                 Game.Starting(Game.NewGameChoice());
             }
             while (!Game.Over()) {
+                if (Game.score >= 65000)
+                {
+                    Game.Won();
+                }
                 Game.Move();
-            }            
+            }
         }
     }
     public static class StartingNums {
@@ -86,8 +92,53 @@
                 moveReady = true;
             }
         }
-        public static bool Over() {
-            return false;
+        public static bool Over() {           
+            for (int i = 0; i < table.GetLength(0); i++)
+            {
+                for (int j = 0; j < table.GetLength(1); j++)
+                {
+                    if (table[i, j].isEmpty)
+                    {
+                        return false; 
+                    }
+                }
+            }                    
+            for (int i = 0; i < table.GetLength(0); i++)
+            {
+                for (int j = 0; j < table.GetLength(1); j++)
+                {
+                    
+                    if (j < table.GetLength(1) - 1 && table[i, j].Value == table[i, j + 1].Value)
+                    {
+                        return false; 
+                    }
+                    
+                    if (i < table.GetLength(0) - 1 && table[i, j].Value == table[i + 1, j].Value)
+                    {
+                        return false; 
+                    }
+                }
+            }
+            Console.ResetColor();
+            Console.WriteLine("\r\n $$$$$$\\   $$$$$$\\  $$\\      $$\\ $$$$$$$$\\        $$$$$$\\  $$\\    $$\\ $$$$$$$$\\ $$$$$$$\\  \r\n$$  __$$\\ $$  __$$\\ $$$\\    $$$ |$$  _____|      $$  __$$\\ $$ |   $$ |$$  _____|$$  __$$\\ \r\n$$ /  \\__|$$ /  $$ |$$$$\\  $$$$ |$$ |            $$ /  $$ |$$ |   $$ |$$ |      $$ |  $$ |\r\n$$ |$$$$\\ $$$$$$$$ |$$\\$$\\$$ $$ |$$$$$\\          $$ |  $$ |\\$$\\  $$  |$$$$$\\    $$$$$$$  |\r\n$$ |\\_$$ |$$  __$$ |$$ \\$$$  $$ |$$  __|         $$ |  $$ | \\$$\\$$  / $$  __|   $$  __$$< \r\n$$ |  $$ |$$ |  $$ |$$ |\\$  /$$ |$$ |            $$ |  $$ |  \\$$$  /  $$ |      $$ |  $$ |\r\n\\$$$$$$  |$$ |  $$ |$$ | \\_/ $$ |$$$$$$$$\\        $$$$$$  |   \\$  /   $$$$$$$$\\ $$ |  $$ |\r\n \\______/ \\__|  \\__|\\__|     \\__|\\________|       \\______/     \\_/    \\________|\\__|  \\__|\r\n                                                                                          \r\n                                                                                          \r\n                                                                                          \r\n");
+            Console.ForegroundColor = ConsoleColor.Black;
+            File.WriteAllText("../prev.txt", string.Empty);
+            return true;
+        }
+        public static void Exit()
+        {
+            Console.ResetColor();
+            Console.WriteLine("Exiting the game...");
+            Console.ForegroundColor = ConsoleColor.Black;
+            Environment.Exit(0);
+        }
+        public static void Won()
+        {
+            Console.Clear();
+            Console.ResetColor();
+            Console.WriteLine("\r\n$$\\     $$\\  $$$$$$\\  $$\\   $$\\       $$\\      $$\\  $$$$$$\\  $$\\   $$\\ $$\\ \r\n\\$$\\   $$  |$$  __$$\\ $$ |  $$ |      $$ | $\\  $$ |$$  __$$\\ $$$\\  $$ |$$ |\r\n \\$$\\ $$  / $$ /  $$ |$$ |  $$ |      $$ |$$$\\ $$ |$$ /  $$ |$$$$\\ $$ |$$ |\r\n  \\$$$$  /  $$ |  $$ |$$ |  $$ |      $$ $$ $$\\$$ |$$ |  $$ |$$ $$\\$$ |$$ |\r\n   \\$$  /   $$ |  $$ |$$ |  $$ |      $$$$  _$$$$ |$$ |  $$ |$$ \\$$$$ |\\__|\r\n    $$ |    $$ |  $$ |$$ |  $$ |      $$$  / \\$$$ |$$ |  $$ |$$ |\\$$$ |    \r\n    $$ |     $$$$$$  |\\$$$$$$  |      $$  /   \\$$ | $$$$$$  |$$ | \\$$ |$$\\ \r\n    \\__|     \\______/  \\______/       \\__/     \\__| \\______/ \\__|  \\__|\\__|\r\n                                                                           \r\n                                                                           \r\n                                                                           \r\n");
+            Console.ForegroundColor = ConsoleColor.Black;
+            Environment.Exit(0);
         }
         private static void Transpose(Tile[,] table, int[] nums) {
             int y = nums[0], x = nums[1];
@@ -140,6 +191,7 @@
                         break;
                     case 1:
                         // exit
+                        Exit();
                         break;
                     default:
                         break;
