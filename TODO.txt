@@ -2,8 +2,9 @@
 (65k fölé nem lehet menni; ha addig elér kapjon vmi bónuszt)
 minden kör végén fájlírás - DONE!
 visszavonás (fájlból); kilépés
-start menü után kérdés, hogy új játék vagy előző folytatása (szintén fájlból)
+start menü után kérdés, hogy új játék vagy előző folytatása (szintén fájlból) - DONE!
 volt e mozgás; kell e számot generálni? - DONE!
 highscore, szintén fájl, start menüre kiíratni - DONE!
 a többi kommentekben;
-mikor vesztett? (static bool Over. már van, csak meg kell írni a belsejét)
+mikor vesztett? (static bool Over. már van, csak meg kell írni a belsejét; ha vesztett, ürítse ki a fájlt!)
+a két txt fájl közül a prev mindig legyen üres, a hiscoreban meg egy 0 legyen ha commitolsz

@@ -2,7 +2,7 @@
     public class Program {
         static void Main() {
             if (Game.Ready()) {
-                Game.Starting();
+                Game.Starting(Game.NewGameChoice());
             }
             while (!Game.Over()) {
                 Game.Move();
@@ -37,21 +37,42 @@
             while (true) {
                 if (Console.ReadKey(true).Key == ConsoleKey.Enter) {
                     Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Black;
                     return true;
                 }
             }
         }
-        public static void Starting() {
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    table[i, j] = new(0);
+        public static bool NewGameChoice() {
+            try {
+                getTableFromFile();
+            }
+            catch {
+                return true;
+            }
+            Console.WriteLine("\tContinue last game (ENTER) or start a new one (N)?");
+            Console.ForegroundColor = ConsoleColor.Black;
+            while (true) {
+                switch (Console.ReadKey(true).Key) {
+                    case ConsoleKey.Enter:
+                        Console.Clear();
+                        return false;
+                    case ConsoleKey.N: 
+                        Console.Clear();
+                        return true;
                 }
             }
-            numberGen();
-            numberGen();
-            writeTableToFile(); // ha új játék
-            tablePrint();
+        }
+        public static void Starting(bool wantsNewGame) {
+            if (wantsNewGame) {
+                score = 0;
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        table[i, j] = new(0);
+                    }
+                }
+                numberGen();
+                numberGen();
+                writeTableToFile();
+            }
         }
         public static void Move() {
             if (moveReady) {
