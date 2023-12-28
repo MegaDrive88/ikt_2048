@@ -7,10 +7,6 @@ namespace ikt {
                 Game.Starting(Game.NewGameChoice());
             }
             while (!Game.Over()) {
-                if (Game.score >= 65000)
-                {
-                    Game.Won();
-                }
                 Game.Move();
             }
         }
@@ -78,6 +74,7 @@ namespace ikt {
                 numberGen();
                 numberGen();
                 writeTableToFile();
+                writeTableToFile2();
             }
         }
         public static void Move() {
@@ -88,37 +85,33 @@ namespace ikt {
                 Transpose(table, StartingNums.Get(Console.ReadKey(true).Key));
                 writeTableToFile();
                 refreshHighscore();
+                CheckWinCondition();
                 //nyert e? 
                 moveReady = true;
             }
         }
-        public static bool Over() {           
-            for (int i = 0; i < table.GetLength(0); i++)
+        public static bool Over()
+        {
+            for (int i = 0; i < 4; i++)
             {
-                for (int j = 0; j < table.GetLength(1); j++)
+                for (int j = 0; j < 4; j++)
                 {
                     if (table[i, j].isEmpty)
                     {
-                        return false; 
+                        return false;
                     }
-                }
-            }                    
-            for (int i = 0; i < table.GetLength(0); i++)
-            {
-                for (int j = 0; j < table.GetLength(1); j++)
-                {
-                    
-                    if (j < table.GetLength(1) - 1 && table[i, j].Value == table[i, j + 1].Value)
+                    if (j < 3 && table[i, j].Value == table[i, j + 1].Value)
                     {
-                        return false; 
+                        return false;
                     }
-                    
-                    if (i < table.GetLength(0) - 1 && table[i, j].Value == table[i + 1, j].Value)
+                    if (i < 3 && table[i, j].Value == table[i + 1, j].Value)
                     {
-                        return false; 
+                        return false;
                     }
                 }
             }
+            getTableFromFile();
+            tablePrint();
             Console.ResetColor();
             Console.WriteLine("\r\n $$$$$$\\   $$$$$$\\  $$\\      $$\\ $$$$$$$$\\        $$$$$$\\  $$\\    $$\\ $$$$$$$$\\ $$$$$$$\\  \r\n$$  __$$\\ $$  __$$\\ $$$\\    $$$ |$$  _____|      $$  __$$\\ $$ |   $$ |$$  _____|$$  __$$\\ \r\n$$ /  \\__|$$ /  $$ |$$$$\\  $$$$ |$$ |            $$ /  $$ |$$ |   $$ |$$ |      $$ |  $$ |\r\n$$ |$$$$\\ $$$$$$$$ |$$\\$$\\$$ $$ |$$$$$\\          $$ |  $$ |\\$$\\  $$  |$$$$$\\    $$$$$$$  |\r\n$$ |\\_$$ |$$  __$$ |$$ \\$$$  $$ |$$  __|         $$ |  $$ | \\$$\\$$  / $$  __|   $$  __$$< \r\n$$ |  $$ |$$ |  $$ |$$ |\\$  /$$ |$$ |            $$ |  $$ |  \\$$$  /  $$ |      $$ |  $$ |\r\n\\$$$$$$  |$$ |  $$ |$$ | \\_/ $$ |$$$$$$$$\\        $$$$$$  |   \\$  /   $$$$$$$$\\ $$ |  $$ |\r\n \\______/ \\__|  \\__|\\__|     \\__|\\________|       \\______/     \\_/    \\________|\\__|  \\__|\r\n                                                                                          \r\n                                                                                          \r\n                                                                                          \r\n");
             Console.ForegroundColor = ConsoleColor.Black;
@@ -132,12 +125,25 @@ namespace ikt {
             Console.ForegroundColor = ConsoleColor.Black;
             Environment.Exit(0);
         }
+        public static void CheckWinCondition()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (table[i, j].Value >= 65000)
+                    {
+                        Won();
+                    }
+                }
+            }
+        }
         public static void Won()
         {
-            Console.Clear();
             Console.ResetColor();
             Console.WriteLine("\r\n$$\\     $$\\  $$$$$$\\  $$\\   $$\\       $$\\      $$\\  $$$$$$\\  $$\\   $$\\ $$\\ \r\n\\$$\\   $$  |$$  __$$\\ $$ |  $$ |      $$ | $\\  $$ |$$  __$$\\ $$$\\  $$ |$$ |\r\n \\$$\\ $$  / $$ /  $$ |$$ |  $$ |      $$ |$$$\\ $$ |$$ /  $$ |$$$$\\ $$ |$$ |\r\n  \\$$$$  /  $$ |  $$ |$$ |  $$ |      $$ $$ $$\\$$ |$$ |  $$ |$$ $$\\$$ |$$ |\r\n   \\$$  /   $$ |  $$ |$$ |  $$ |      $$$$  _$$$$ |$$ |  $$ |$$ \\$$$$ |\\__|\r\n    $$ |    $$ |  $$ |$$ |  $$ |      $$$  / \\$$$ |$$ |  $$ |$$ |\\$$$ |    \r\n    $$ |     $$$$$$  |\\$$$$$$  |      $$  /   \\$$ | $$$$$$  |$$ | \\$$ |$$\\ \r\n    \\__|     \\______/  \\______/       \\__/     \\__| \\______/ \\__|  \\__|\\__|\r\n                                                                           \r\n                                                                           \r\n                                                                           \r\n");
             Console.ForegroundColor = ConsoleColor.Black;
+            File.WriteAllText("../prev.txt", string.Empty);
             Environment.Exit(0);
         }
         private static void Transpose(Tile[,] table, int[] nums) {
@@ -145,6 +151,7 @@ namespace ikt {
             bool moved = false;
             bool numberGenNeeded = false;
             if (y != -1) {
+                writeTableToFile2();
                 int scout_y = y + nums[2], scout_x = x + nums[3];
                 for (int i = 0; i < 4; i++) {
                     for (int j = 0; j < 3; j++) {
@@ -188,6 +195,8 @@ namespace ikt {
                     case 0:
                         //undo
                         //gettablefromfile
+                        getTableFromFile2();
+                        tablePrint();
                         break;
                     case 1:
                         // exit
@@ -241,6 +250,29 @@ namespace ikt {
                 fileWrite("../prev.txt", $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
             }
             fileWrite("../prev.txt", $"{score}", true);
+        }
+        private static void getTableFromFile2()
+        {
+            fileRead("../undo.txt");
+            for (int i = 0; i < 4; i++)
+            {
+                string[] oneLine = file[i].Split('\t');
+                for (int j = 0; j < 4; j++)
+                {
+                    table[i, j] = new(int.Parse(oneLine[j]));
+                }
+            }
+            score = int.Parse(file[4]);
+        }
+        private static void writeTableToFile2()
+        {
+            fileWrite("../undo.txt", "");
+            file = new();
+            for (int i = 0; i < 4; i++)
+            {
+                fileWrite("../undo.txt", $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
+            }
+            fileWrite("../undo.txt", $"{score}", true);
         }
         private static void refreshHighscore() {
             fileRead("../hiscore.txt");
