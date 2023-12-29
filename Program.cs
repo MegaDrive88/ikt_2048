@@ -76,6 +76,16 @@ namespace ikt {
                 writeTableToFile();
                 writeTableToFile2();
             }
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (table[i,j].Value >= 2048)
+                    {
+                        alrwon = true;
+                    }
+                }
+            }
         }
         public static void Move() {
             if (moveReady) {
@@ -125,6 +135,7 @@ namespace ikt {
             Console.ForegroundColor = ConsoleColor.Black;
             Environment.Exit(0);
         }
+        public static bool alrwon = false;
         public static void CheckWinCondition()
         {
             for (int i = 0; i < 4; i++)
@@ -135,16 +146,36 @@ namespace ikt {
                     {
                         Won();
                     }
+                    if (table[i, j].Value >= 2048 && alrwon == false)
+                    {
+                        Won();
+                    }
                 }
             }
         }
         public static void Won()
         {
-            Console.ResetColor();
-            Console.WriteLine("\r\n$$\\     $$\\  $$$$$$\\  $$\\   $$\\       $$\\      $$\\  $$$$$$\\  $$\\   $$\\ $$\\ \r\n\\$$\\   $$  |$$  __$$\\ $$ |  $$ |      $$ | $\\  $$ |$$  __$$\\ $$$\\  $$ |$$ |\r\n \\$$\\ $$  / $$ /  $$ |$$ |  $$ |      $$ |$$$\\ $$ |$$ /  $$ |$$$$\\ $$ |$$ |\r\n  \\$$$$  /  $$ |  $$ |$$ |  $$ |      $$ $$ $$\\$$ |$$ |  $$ |$$ $$\\$$ |$$ |\r\n   \\$$  /   $$ |  $$ |$$ |  $$ |      $$$$  _$$$$ |$$ |  $$ |$$ \\$$$$ |\\__|\r\n    $$ |    $$ |  $$ |$$ |  $$ |      $$$  / \\$$$ |$$ |  $$ |$$ |\\$$$ |    \r\n    $$ |     $$$$$$  |\\$$$$$$  |      $$  /   \\$$ | $$$$$$  |$$ | \\$$ |$$\\ \r\n    \\__|     \\______/  \\______/       \\__/     \\__| \\______/ \\__|  \\__|\\__|\r\n                                                                           \r\n                                                                           \r\n                                                                           \r\n");
-            Console.ForegroundColor = ConsoleColor.Black;
-            File.WriteAllText("../prev.txt", string.Empty);
-            Environment.Exit(0);
+            if (alrwon == true)
+            {
+                Console.Clear();
+                Console.ResetColor();
+                Console.WriteLine("\r\n$$\\     $$\\  $$$$$$\\  $$\\   $$\\       $$\\      $$\\  $$$$$$\\  $$\\   $$\\ $$\\ \r\n\\$$\\   $$  |$$  __$$\\ $$ |  $$ |      $$ | $\\  $$ |$$  __$$\\ $$$\\  $$ |$$ |\r\n \\$$\\ $$  / $$ /  $$ |$$ |  $$ |      $$ |$$$\\ $$ |$$ /  $$ |$$$$\\ $$ |$$ |\r\n  \\$$$$  /  $$ |  $$ |$$ |  $$ |      $$ $$ $$\\$$ |$$ |  $$ |$$ $$\\$$ |$$ |\r\n   \\$$  /   $$ |  $$ |$$ |  $$ |      $$$$  _$$$$ |$$ |  $$ |$$ \\$$$$ |\\__|\r\n    $$ |    $$ |  $$ |$$ |  $$ |      $$$  / \\$$$ |$$ |  $$ |$$ |\\$$$ |    \r\n    $$ |     $$$$$$  |\\$$$$$$  |      $$  /   \\$$ | $$$$$$  |$$ | \\$$ |$$\\ \r\n    \\__|     \\______/  \\______/       \\__/     \\__| \\______/ \\__|  \\__|\\__|\r\n                                                                           \r\n                                                                           \r\n                                                                           \r\n");
+                Console.ForegroundColor = ConsoleColor.Black;
+                File.WriteAllText("../prev.txt", string.Empty);
+                Environment.Exit(0);
+            }
+            else
+            {
+                alrwon = true;
+                Console.Clear();
+                Console.ResetColor();
+                Console.WriteLine("\r\n$$\\     $$\\  $$$$$$\\  $$\\   $$\\       $$\\      $$\\  $$$$$$\\  $$\\   $$\\ $$\\ \r\n\\$$\\   $$  |$$  __$$\\ $$ |  $$ |      $$ | $\\  $$ |$$  __$$\\ $$$\\  $$ |$$ |\r\n \\$$\\ $$  / $$ /  $$ |$$ |  $$ |      $$ |$$$\\ $$ |$$ /  $$ |$$$$\\ $$ |$$ |\r\n  \\$$$$  /  $$ |  $$ |$$ |  $$ |      $$ $$ $$\\$$ |$$ |  $$ |$$ $$\\$$ |$$ |\r\n   \\$$  /   $$ |  $$ |$$ |  $$ |      $$$$  _$$$$ |$$ |  $$ |$$ \\$$$$ |\\__|\r\n    $$ |    $$ |  $$ |$$ |  $$ |      $$$  / \\$$$ |$$ |  $$ |$$ |\\$$$ |    \r\n    $$ |     $$$$$$  |\\$$$$$$  |      $$  /   \\$$ | $$$$$$  |$$ | \\$$ |$$\\ \r\n    \\__|     \\______/  \\______/       \\__/     \\__| \\______/ \\__|  \\__|\\__|\r\n                                                                           \r\n                                                                           \r\n                                                                           \r\n");
+                Console.WriteLine("Continue playing (ENTER) exit the game (ESC)");
+                if (Console.ReadKey(true).Key == ConsoleKey.Escape)
+                {
+                    Exit();
+                }
+            }
         }
         private static void Transpose(Tile[,] table, int[] nums) {
             int y = nums[0], x = nums[1];
