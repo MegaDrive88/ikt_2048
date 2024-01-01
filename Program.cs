@@ -1,13 +1,17 @@
-﻿using System.IO;
-
-namespace ikt {
+﻿namespace ikt {
     public class Program {
+        static bool gameOver = false;
         static void Main() {
             if (Game.Ready()) {
                 Game.Starting(Game.NewGameChoice());
             }
-            while (!Game.Over()) {
+            while (!gameOver) {
                 Game.Move();
+                gameOver = Game.Over();
+                if (gameOver) {
+                    Game.Lost();
+                    gameOver = Game.Over();
+                }
             }
         }
     }
@@ -28,7 +32,8 @@ namespace ikt {
         private static Random rnd = new();
         private static Tile[,] table = new Tile[4, 4];
         private static List<string?> file = new();
-        public static int score;
+        private static int score;
+        private static bool alreadyWon = false;
         private static bool moveReady = true;
         public static bool Ready() {
             Console.CursorVisible = false;
@@ -45,7 +50,7 @@ namespace ikt {
         }
         public static bool NewGameChoice() {
             try {
-                getTableFromFile();
+                getTableFromFile("../curr.txt");
             }
             catch {
                 return true;
@@ -73,107 +78,72 @@ namespace ikt {
                 }
                 numberGen();
                 numberGen();
-                writeTableToFile();
-                writeTableToFile2();
-            }
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (table[i,j].Value >= 2048)
-                    {
-                        alrwon = true;
-                    }
-                }
+                writeTableToFile("../curr.txt");
+                writeTableToFile("../prev.txt");
             }
         }
         public static void Move() {
             if (moveReady) {
                 moveReady = false;
-                getTableFromFile();
+                getTableFromFile("../curr.txt");
                 tablePrint();
                 Transpose(table, StartingNums.Get(Console.ReadKey(true).Key));
-                writeTableToFile();
+                writeTableToFile("../curr.txt");
                 refreshHighscore();
-                CheckWinCondition();
-                //nyert e? 
+                if (table.Cast<Tile>().Max(x => x.Value) == 2048 && !alreadyWon) {
+                    Won();
+                }
+                if (table.Cast<Tile>().Max(x => x.Value) == 65536) {
+                    tablePrint();
+                    Console.ResetColor();
+                    score += 130000;
+                    refreshHighscore();
+                    Console.WriteLine("Congratulations! You reached the maximum number! You will be redirected to the start menu in 5 seconds.");
+                    Thread.Sleep(5000);
+                    Console.Clear();
+                    if (Ready()) {
+                        Starting(true);
+                    }
+                }
                 moveReady = true;
             }
         }
-        public static bool Over()
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (table[i, j].isEmpty)
-                    {
+        public static bool Over() {
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (table[i, j].isEmpty) {
                         return false;
                     }
-                    if (j < 3 && table[i, j].Value == table[i, j + 1].Value)
-                    {
+                    if (j < 3 && table[i, j].Value == table[i, j + 1].Value) {
                         return false;
                     }
-                    if (i < 3 && table[i, j].Value == table[i + 1, j].Value)
-                    {
+                    if (i < 3 && table[i, j].Value == table[i + 1, j].Value) {
                         return false;
                     }
                 }
             }
-            getTableFromFile();
-            tablePrint();
-            Console.ResetColor();
-            Console.WriteLine("\r\n $$$$$$\\   $$$$$$\\  $$\\      $$\\ $$$$$$$$\\        $$$$$$\\  $$\\    $$\\ $$$$$$$$\\ $$$$$$$\\  \r\n$$  __$$\\ $$  __$$\\ $$$\\    $$$ |$$  _____|      $$  __$$\\ $$ |   $$ |$$  _____|$$  __$$\\ \r\n$$ /  \\__|$$ /  $$ |$$$$\\  $$$$ |$$ |            $$ /  $$ |$$ |   $$ |$$ |      $$ |  $$ |\r\n$$ |$$$$\\ $$$$$$$$ |$$\\$$\\$$ $$ |$$$$$\\          $$ |  $$ |\\$$\\  $$  |$$$$$\\    $$$$$$$  |\r\n$$ |\\_$$ |$$  __$$ |$$ \\$$$  $$ |$$  __|         $$ |  $$ | \\$$\\$$  / $$  __|   $$  __$$< \r\n$$ |  $$ |$$ |  $$ |$$ |\\$  /$$ |$$ |            $$ |  $$ |  \\$$$  /  $$ |      $$ |  $$ |\r\n\\$$$$$$  |$$ |  $$ |$$ | \\_/ $$ |$$$$$$$$\\        $$$$$$  |   \\$  /   $$$$$$$$\\ $$ |  $$ |\r\n \\______/ \\__|  \\__|\\__|     \\__|\\________|       \\______/     \\_/    \\________|\\__|  \\__|\r\n                                                                                          \r\n                                                                                          \r\n                                                                                          \r\n");
-            Console.ForegroundColor = ConsoleColor.Black;
-            File.WriteAllText("../prev.txt", string.Empty);
             return true;
         }
-        public static void Exit()
-        {
+        private static void Exit() {
             Console.ResetColor();
             Console.WriteLine("Exiting the game...");
-            Console.ForegroundColor = ConsoleColor.Black;
             Environment.Exit(0);
         }
-        public static bool alrwon = false;
-        public static void CheckWinCondition()
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (table[i, j].Value >= 65000)
-                    {
-                        Won();
-                    }
-                    if (table[i, j].Value >= 2048 && alrwon == false)
-                    {
-                        Won();
-                    }
-                }
-            }
-        }
-        public static void Won()
-        {
-            if (alrwon == true)
-            {
-                Console.Clear();
-                Console.ResetColor();
-                Console.WriteLine("\r\n$$\\     $$\\  $$$$$$\\  $$\\   $$\\       $$\\      $$\\  $$$$$$\\  $$\\   $$\\ $$\\ \r\n\\$$\\   $$  |$$  __$$\\ $$ |  $$ |      $$ | $\\  $$ |$$  __$$\\ $$$\\  $$ |$$ |\r\n \\$$\\ $$  / $$ /  $$ |$$ |  $$ |      $$ |$$$\\ $$ |$$ /  $$ |$$$$\\ $$ |$$ |\r\n  \\$$$$  /  $$ |  $$ |$$ |  $$ |      $$ $$ $$\\$$ |$$ |  $$ |$$ $$\\$$ |$$ |\r\n   \\$$  /   $$ |  $$ |$$ |  $$ |      $$$$  _$$$$ |$$ |  $$ |$$ \\$$$$ |\\__|\r\n    $$ |    $$ |  $$ |$$ |  $$ |      $$$  / \\$$$ |$$ |  $$ |$$ |\\$$$ |    \r\n    $$ |     $$$$$$  |\\$$$$$$  |      $$  /   \\$$ | $$$$$$  |$$ | \\$$ |$$\\ \r\n    \\__|     \\______/  \\______/       \\__/     \\__| \\______/ \\__|  \\__|\\__|\r\n                                                                           \r\n                                                                           \r\n                                                                           \r\n");
-                Console.ForegroundColor = ConsoleColor.Black;
-                File.WriteAllText("../prev.txt", string.Empty);
-                Environment.Exit(0);
-            }
-            else
-            {
-                alrwon = true;
-                Console.Clear();
-                Console.ResetColor();
-                Console.WriteLine("\r\n$$\\     $$\\  $$$$$$\\  $$\\   $$\\       $$\\      $$\\  $$$$$$\\  $$\\   $$\\ $$\\ \r\n\\$$\\   $$  |$$  __$$\\ $$ |  $$ |      $$ | $\\  $$ |$$  __$$\\ $$$\\  $$ |$$ |\r\n \\$$\\ $$  / $$ /  $$ |$$ |  $$ |      $$ |$$$\\ $$ |$$ /  $$ |$$$$\\ $$ |$$ |\r\n  \\$$$$  /  $$ |  $$ |$$ |  $$ |      $$ $$ $$\\$$ |$$ |  $$ |$$ $$\\$$ |$$ |\r\n   \\$$  /   $$ |  $$ |$$ |  $$ |      $$$$  _$$$$ |$$ |  $$ |$$ \\$$$$ |\\__|\r\n    $$ |    $$ |  $$ |$$ |  $$ |      $$$  / \\$$$ |$$ |  $$ |$$ |\\$$$ |    \r\n    $$ |     $$$$$$  |\\$$$$$$  |      $$  /   \\$$ | $$$$$$  |$$ | \\$$ |$$\\ \r\n    \\__|     \\______/  \\______/       \\__/     \\__| \\______/ \\__|  \\__|\\__|\r\n                                                                           \r\n                                                                           \r\n                                                                           \r\n");
-                Console.WriteLine("Continue playing (ENTER) exit the game (ESC)");
-                if (Console.ReadKey(true).Key == ConsoleKey.Escape)
-                {
-                    Exit();
+        private static bool Won() {
+            tablePrint();
+            alreadyWon = true;
+            writeTableToFile("../curr.txt");
+            Console.ResetColor();
+            Console.WriteLine("\r\n$$\\     $$\\  $$$$$$\\  $$\\   $$\\       $$\\      $$\\  $$$$$$\\  $$\\   $$\\ $$\\ \r\n\\$$\\   $$  |$$  __$$\\ $$ |  $$ |      $$ | $\\  $$ |$$  __$$\\ $$$\\  $$ |$$ |\r\n \\$$\\ $$  / $$ /  $$ |$$ |  $$ |      $$ |$$$\\ $$ |$$ /  $$ |$$$$\\ $$ |$$ |\r\n  \\$$$$  /  $$ |  $$ |$$ |  $$ |      $$ $$ $$\\$$ |$$ |  $$ |$$ $$\\$$ |$$ |\r\n   \\$$  /   $$ |  $$ |$$ |  $$ |      $$$$  _$$$$ |$$ |  $$ |$$ \\$$$$ |\\__|\r\n    $$ |    $$ |  $$ |$$ |  $$ |      $$$  / \\$$$ |$$ |  $$ |$$ |\\$$$ |    \r\n    $$ |     $$$$$$  |\\$$$$$$  |      $$  /   \\$$ | $$$$$$  |$$ | \\$$ |$$\\ \r\n    \\__|     \\______/  \\______/       \\__/     \\__| \\______/ \\__|  \\__|\\__|\r\n\r\n\r\n");
+            Console.WriteLine("Continue playing (ENTER) or start a new game (N)?");
+            while (true) {
+                switch (Console.ReadKey(true).Key) {
+                    case ConsoleKey.Enter:
+                        return false;
+                    case ConsoleKey.N:
+                        Starting(true);
+                        tablePrint();
+                        return true;
                 }
             }
         }
@@ -182,7 +152,7 @@ namespace ikt {
             bool moved = false;
             bool numberGenNeeded = false;
             if (y != -1) {
-                writeTableToFile2();
+                writeTableToFile("../prev.txt");
                 int scout_y = y + nums[2], scout_x = x + nums[3];
                 for (int i = 0; i < 4; i++) {
                     for (int j = 0; j < 3; j++) {
@@ -224,13 +194,10 @@ namespace ikt {
             else {
                 switch (nums[2]) {
                     case 0:
-                        //undo
-                        //gettablefromfile
-                        getTableFromFile2();
+                        getTableFromFile("../prev.txt");
                         tablePrint();
                         break;
                     case 1:
-                        // exit
                         Exit();
                         break;
                     default:
@@ -264,8 +231,8 @@ namespace ikt {
                 fileWrite(filename, value, appendMode);
             }
         }
-        private static void getTableFromFile() {
-            fileRead("../prev.txt");
+        private static void getTableFromFile(string filename) {
+            fileRead(filename);
             for(int i = 0; i < 4; i++) {
                 string[] oneLine = file[i].Split('\t');
                 for (int j = 0; j < 4; j++) {
@@ -273,37 +240,17 @@ namespace ikt {
                 }
             }
             score = int.Parse(file[4]);
+            alreadyWon = bool.Parse(file[5]);
         }
-        private static void writeTableToFile() {
-            fileWrite("../prev.txt", "");
+        private static void writeTableToFile(string filename) {
+            fileWrite(filename, "");
             file = new();
             for (int i = 0; i < 4; i++) {
-                fileWrite("../prev.txt", $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
+                fileWrite(filename, $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
             }
-            fileWrite("../prev.txt", $"{score}", true);
-        }
-        private static void getTableFromFile2()
-        {
-            fileRead("../undo.txt");
-            for (int i = 0; i < 4; i++)
-            {
-                string[] oneLine = file[i].Split('\t');
-                for (int j = 0; j < 4; j++)
-                {
-                    table[i, j] = new(int.Parse(oneLine[j]));
-                }
-            }
-            score = int.Parse(file[4]);
-        }
-        private static void writeTableToFile2()
-        {
-            fileWrite("../undo.txt", "");
-            file = new();
-            for (int i = 0; i < 4; i++)
-            {
-                fileWrite("../undo.txt", $"{table[i, 0].Value}\t{table[i, 1].Value}\t{table[i, 2].Value}\t{table[i, 3].Value}\n", true);
-            }
-            fileWrite("../undo.txt", $"{score}", true);
+            fileWrite(filename, $"{score}\n", true);
+            fileWrite(filename, $"{alreadyWon}", true);
+
         }
         private static void refreshHighscore() {
             fileRead("../hiscore.txt");
@@ -328,6 +275,23 @@ namespace ikt {
                     table[i, j].Show();
                 }
                 Console.WriteLine();
+            }
+        }
+        public static bool Lost() {
+            tablePrint();
+            Console.ResetColor();
+            Console.WriteLine("\r\n $$$$$$\\   $$$$$$\\  $$\\      $$\\ $$$$$$$$\\        $$$$$$\\  $$\\    $$\\ $$$$$$$$\\ $$$$$$$\\  \r\n$$  __$$\\ $$  __$$\\ $$$\\    $$$ |$$  _____|      $$  __$$\\ $$ |   $$ |$$  _____|$$  __$$\\ \r\n$$ /  \\__|$$ /  $$ |$$$$\\  $$$$ |$$ |            $$ /  $$ |$$ |   $$ |$$ |      $$ |  $$ |\r\n$$ |$$$$\\ $$$$$$$$ |$$\\$$\\$$ $$ |$$$$$\\          $$ |  $$ |\\$$\\  $$  |$$$$$\\    $$$$$$$  |\r\n$$ |\\_$$ |$$  __$$ |$$ \\$$$  $$ |$$  __|         $$ |  $$ | \\$$\\$$  / $$  __|   $$  __$$< \r\n$$ |  $$ |$$ |  $$ |$$ |\\$  /$$ |$$ |            $$ |  $$ |  \\$$$  /  $$ |      $$ |  $$ |\r\n\\$$$$$$  |$$ |  $$ |$$ | \\_/ $$ |$$$$$$$$\\        $$$$$$  |   \\$  /   $$$$$$$$\\ $$ |  $$ |\r\n \\______/ \\__|  \\__|\\__|     \\__|\\________|       \\______/     \\_/    \\________|\\__|  \\__|\r\n\r\n\r\n\r\n");
+            Console.WriteLine("Undo last move (Z) or start new game (N)?");
+            while (true) {
+                switch (Console.ReadKey(true).Key) {
+                    case ConsoleKey.Z:
+                        getTableFromFile("../prev.txt");
+                        return false;
+                    case ConsoleKey.N:
+                        Starting(true);
+                        tablePrint();
+                        return true;
+                }
             }
         }
     }

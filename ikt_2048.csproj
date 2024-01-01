@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,12 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="hiscore.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="prev.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    
   </ItemGroup>
 
 </Project>
