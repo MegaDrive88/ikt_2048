@@ -96,7 +96,7 @@
                 if (table.Cast<Tile>().Max(x => x.Value) == 65536) {
                     tablePrint();
                     Console.ResetColor();
-                    score += 130000;
+                    score += 1000000;
                     refreshHighscore();
                     Console.WriteLine("Congratulations! You reached the maximum number! You will be redirected to the start menu in 5 seconds.");
                     Thread.Sleep(5000);
