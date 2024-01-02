@@ -1,16 +1,13 @@
 ﻿namespace ikt {
     public class Program {
-        static bool gameOver = false;
         static void Main() {
             if (Game.Ready()) {
                 Game.Starting(Game.NewGameChoice());
             }
-            while (!gameOver) {
+            while (true) {
                 Game.Move();
-                gameOver = Game.Over();
-                if (gameOver) {
+                if (Game.Over()) {
                     Game.Lost();
-                    gameOver = Game.Over();
                 }
             }
         }
